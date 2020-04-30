@@ -30,7 +30,7 @@ function preload()
   Gallery = loadImage("assets/Interface_Gallery.jpg");
   FlowerGallery = loadImage("assets/Flower_Category.jpg");
   LandscapeGallery = loadImage("assets/Landscape_Category.jpg");
-  PatternGallery = loadImage("assets/Flower_Category.jpg");
+  PatternGallery = loadImage("assets/Patterns.jpg");
 }
 
 function setup() 
