@@ -1,4 +1,10 @@
 /* MY WEBCAM IS 640x480 */
+// Author: Billy Henry
+// Date Uploaded: 5/1/2020
+// Course: CSC-363, Spring 2020
+// Description: Interactive Coloring book application using p5.js and tracking.js
+
+// GLOBALS
 let mode = 0;
 var colors;
 var r, g, b, sw;
@@ -15,6 +21,7 @@ var showSliders = false;
 let trail = [];
 
 // Load the coloring pages
+// Called in preload() as built in to p5
 function preload()
 {
   Beach = loadImage("assets/Beach.png");
@@ -33,18 +40,25 @@ function preload()
   PatternGallery = loadImage("assets/Patterns_.jpg");
 }
 
+// Create initial canvas
 function setup() 
 {
   createCanvas(w,h);
+  //Set starting image to main menu screen
   currentImg = MainMenu;
   capture = createCapture(VIDEO); //capture the webcam
-  capture.position(0,0); //move the capture to the top left
-  capture.style('opacity',0);// use this to hide the capture later on (change to 0 to hide)...
-  capture.id("myVideo"); //give the capture an ID so we can use it in the tracker below.
+  // Place webcam in top left on canvas
+  capture.position(0,0);
+  // Hide capture
+  capture.style('opacity',0);
+  capture.id("myVideo");
+  // set capture size to the same size as the screen
   capture.size(w,h);
+  // set the color to track
   colors = new tracking.ColorTracker(['yellow']);
 
-  tracking.track('#myVideo', colors); // start the tracking of the colors above on the camera in p5
+  // start the tracking of the colors above on the camera in p5
+  tracking.track('#myVideo', colors); 
 
   //start detecting the tracking
   colors.on('track', function(event) 
@@ -54,13 +68,16 @@ function setup()
 
 }
 
+// Continuously draw to p5 canvas
 function draw() 
 {
+  // Draw the image to the canvas
   image(currentImg,0,0,w,h);
-  print("X = " + mouseX);
-  print("Y = " + mouseY);
+
+  // Menu screens are bypassed, begin tracking algorithm
   if(mode > 4)
   {
+    // Unhide the RGB sliders in the top left
     if(!showSliders)
     {
       createUI();
@@ -76,25 +93,22 @@ function draw()
     //text('G: '+g,160,55);
     //text('B: '+b,160,75);
     
-    //fill(r,g,b);
+    // Set the stroke color using vals from RGB sliders
     stroke(r,g,b);
+    // Width of stroke can be adjusted here
     strokeWeight(50);
     if(trackingData)
     {
+      // Find brightest consecutive points, and draw a line
+      // connecting them
       var best = findPoint(trackingData);
       var next = findPoint(trackingData);
       line(best.x,best.y,next.x,next.y);
-      /*trail.push([best.x,best.y]);
-      
-      for (let i = 0; i < trail.length; i++)
-      {
-        noStroke();
-        ellipse(trail[i][0], trail[i][1], 16);
-      }*/
     }
   }
 }
 
+// Creates the sliders for RGB
 function createUI()
 {
   // create some sliders
@@ -110,34 +124,32 @@ function createUI()
 
 function keyPressed()
 {
+ // Advance from main menu
  if(keyCode==ENTER)
  {
    background(255);
    currentImg = Gallery;
    mode = 1;
  }
+ // Go back to main menu
  if(keyCode==ESCAPE)
  {
    background(255);
    currentImg = MainMenu;
    mode = 0;
  }
- if(keyCode == UP_ARROW)
- {
-   r = 0;
-   g = 0;
-   b = 150;
- }
 }
 
+// Algorithm used for detecting the most yellow point
 function findPoint()
 {
+  // Create vector to hold x,y coords
   var bestPoint = createVector(0,0);
   var x,y;
+  // Loop through all tracking data from tracking.js
   for (var i = 0; i < trackingData.length; i++)
   {
-    //x = abs((trackingData[i].x*2)-w);
-    //y = trackingData[i].y*2;
+    // Create x,y coords after scaling capture to canvas
     x = abs((trackingData[i].x)-w);
     y = trackingData[i].y;
   }
@@ -145,6 +157,7 @@ function findPoint()
   return bestPoint;
 }
 
+// Menu navigation system
 function mouseClicked()
 {
   if(mode == 1)
